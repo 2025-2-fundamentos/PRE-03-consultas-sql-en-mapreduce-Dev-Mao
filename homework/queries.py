@@ -2,8 +2,10 @@
 
 # pylint: disable=broad-exception-raised
 # pylint: disable=import-error
-
-from mapreduce import mapreduce  # type: ignore
+try:
+    from .mapreduce import mapreduce  # type: ignore
+except Exception:
+    from mapreduce import mapreduce  # type: ignore
 import shutil
 import os
 #
@@ -109,6 +111,21 @@ def reducer_query_4(sequence):
 
 
 #
+# QUERY 5:
+# Identity mapper to produce query_5 artifacts
+def mapper_query_5(sequence):
+    """Mapper"""
+    result = []
+    for index, (_, row) in enumerate(sequence):
+        result.append((index, row.strip()))
+    return result
+
+
+def reducer_query_5(sequence):
+    """Reducer"""
+    return sequence
+
+#
 # ORQUESTADOR:
 #
 def run():
@@ -154,6 +171,16 @@ def run():
         output_folder="files/query_4", 
         mapper_fn=mapper_query_4, 
         reducer_fn=reducer_query_4,
+    )    
+
+    if os.path.exists("files/query_5"):
+        shutil.rmtree("files/query_5")
+
+    mapreduce(
+        input_folder="files/input/", 
+        output_folder="files/query_5", 
+        mapper_fn=mapper_query_5, 
+        reducer_fn=reducer_query_5,
     )    
 
 
